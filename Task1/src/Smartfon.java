@@ -14,7 +14,7 @@ public class Smartfon extends Product {
     @Override
     public void printInfo(){
         super.printInfo();
-        System.out.println("Color: " + color);
-        System.out.println("Battery capacity: " + batteryCapacity);
+        System.out.println("Kolor: " + color);
+        System.out.println("Pojemność baterii " + batteryCapacity);
     }
 }

@@ -14,7 +14,7 @@ public class Computer extends Product {
     @Override
     public void printInfo(){
         super.printInfo();
-        System.out.println("Procesor type: " + procesorType);
+        System.out.println("Typ procesora " + procesorType);
         System.out.println("Ram " + ram);
     }
 }
