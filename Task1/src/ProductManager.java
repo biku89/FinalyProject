@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ProductManager {
-    List<Product> products = new ArrayList<>();
+    private final List<Product> products = new ArrayList<>();
 
     public void addProduct(Product product) {
         products.add(product);

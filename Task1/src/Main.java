@@ -13,10 +13,15 @@ public class Main {
 
         productManager.addProduct(new Product(3, "Steelseries", 3000, 1));
         productManager.showInfoAboutAllProducts();
-        productManager.removeProduct(2);
+        //productManager.removeProduct(2);
         productManager.productUpdate(1, "Amd", 300, 3);
         System.out.println("Po aktuzalizacji: ");
         productManager.showInfoAboutAllProducts();
+
+        Cart cart = new Cart();
+        cart.addToCart(smartfon);
+        cart.showClientCart();
+        //cart.makeOrder();
 
     }
 }
