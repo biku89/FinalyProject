@@ -20,8 +20,14 @@ public class Main {
 
         Cart cart = new Cart();
         cart.addToCart(smartfon);
+        cart.addToCart(computer);
         cart.showClientCart();
         //cart.makeOrder();
+
+        Order order = new Order("Jan Kowalski", cart.getClientCart());
+        order.printOrderSummary();
+
+
 
     }
 }

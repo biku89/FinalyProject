@@ -7,7 +7,7 @@ public class Cart {
 
     public void addToCart(Product product) {
         clientCart.add(product);
-        System.out.println("Produkt dodany do koszyka ");
+        System.out.println("Produkt dodany do koszyka " + product.getName());
     }
 
     public void showClientCart() {
@@ -21,10 +21,21 @@ public class Cart {
     }
 
     public void makeOrder() {
-        if (clientCart != null) {
+        if (clientCart.isEmpty()) {
+            System.out.println("Koszyk jest pusty");
+        } else {
             System.out.println("Udało się złożyć zamówienie");
             clientCart.stream().forEach(Product::printInfo);
         }
+
     }
 
+
+    public double sumOrder() {
+        return clientCart.stream().mapToDouble(Product::getPrice).sum();
+    }
+
+    public List<Product> getClientCart() {
+        return clientCart;
+    }
 }
