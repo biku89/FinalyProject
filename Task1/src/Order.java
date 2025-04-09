@@ -17,13 +17,14 @@ public class Order {
     }
 
     public void printOrderSummary() {
-        System.out.println("Zamówienie dla " + clientName);
-        System.out.println("Produkty");
+        System.out.println("Zamówienie dla: " + clientName);
+        System.out.println("Produkty: ");
         for (Product product : orderItems) {
             System.out.println(" - " + product.getName() + ", cena: " + product.getPrice());
         }
-        System.out.println("Suma zamówienia " + priceSummary);
+        System.out.println("Suma zamówienia: " + priceSummary);
     }
+    //TODO: przy hajsie użyj bigdecimal
 
     public double getPriceSummary() {
         return priceSummary;

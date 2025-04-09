@@ -1,21 +1,37 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Product {
     private int id;
     private String name;
     private double price;
     private int quantityAvaliable;
+    private ProductType type;
+    private List<Configuration> configurations = new ArrayList<>();
 
-    public Product(int id, String name, double price, int quantityAvaliable) {
+    public Product(int id, String name, double price, int quantityAvaliable, ProductType type) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantityAvaliable = quantityAvaliable;
+        this.type = type;
     }
 
-    public void printInfo(){
-        System.out.println("Produkt " + name);
-        System.out.println("Id: " + id);
-        System.out.println("Cena " + price);
-        System.out.println("Dostępna ilość " + quantityAvaliable);
+    public void addConfiguration(Configuration config) {
+        configurations.add(config);
+    }
+
+    public void printInfo() {
+        System.out.println("Produkt #" + id + ": " + name + ", cena: " + price + " zł, dostępność: " + quantityAvaliable + ", typ: " + type);
+        if (!configurations.isEmpty()) {
+            System.out.println("Dostępne konfiguracje:");
+            for (int i = 0; i < configurations.size(); i++) {
+                System.out.println("Konfiguracja #" + (i + 1));
+                configurations.get(i).printConfiguration();
+            }
+        } else {
+            System.out.println("Brak dodatkowych konfiguracji.");
+        }
     }
 
     public int getId() {
@@ -49,4 +65,13 @@ public class Product {
     public void setQuantityAvaliable(int quantityAvaliable) {
         this.quantityAvaliable = quantityAvaliable;
     }
+
+    public ProductType getType() {
+        return type;
+    }
+
+    public void setType(ProductType type) {
+        this.type = type;
+    }
+
 }

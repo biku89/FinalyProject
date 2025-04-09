@@ -2,31 +2,24 @@ public class Main {
     public static void main(String[] args) {
         ProductManager productManager = new ProductManager();
 
-        Computer computer = new Computer(1, "Intel", 4000, 10);
-        computer.hardwareConfiguration("i7 2000", 32);
+        Product laptop = new Product(1, "Laptop Dell", 4000,4, ProductType.COMPUTER);
 
-        Smartfon smartfon = new Smartfon(2,"Xiaomi", 430, 4);
-        smartfon.hardwareConfiguration("Czarny",3200);
+        Configuration config1 = new Configuration();
+        config1.add("Procesor", "Intel i7");
+        config1.add("Ram","16Gb" );
 
-        productManager.addProduct(computer);
-        productManager.addProduct(smartfon);
+        Configuration config2 = new Configuration();
+        config2.add("Procesor", "Intel i5");
+        config2.add("Ram","32Gb" );
 
-        productManager.addProduct(new Product(3, "Steelseries", 3000, 1));
-        productManager.showInfoAboutAllProducts();
-        //productManager.removeProduct(2);
-        productManager.productUpdate(1, "Amd", 300, 3);
-        System.out.println("Po aktuzalizacji: ");
-        productManager.showInfoAboutAllProducts();
+        laptop.addConfiguration(config1);
+        laptop.addConfiguration(config2);
 
-        Cart cart = new Cart();
-        cart.addToCart(smartfon);
-        cart.addToCart(computer);
-        cart.showClientCart();
-        //cart.makeOrder();
+        laptop.printInfo();
 
-        Order order = new Order("Jan Kowalski", cart.getClientCart());
-        order.printOrderSummary();
 
+//        productManager.addProduct(laptop);
+//        productManager.showInfoAboutAllProducts();
 
 
     }
