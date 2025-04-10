@@ -11,10 +11,14 @@ public class ProductManager {
 
     }
 
+    public Optional<Product> findById(int id){
+        return products.stream()
+                .filter(product -> product.getId() == id)
+                .findFirst();
+    }
+
     public void removeProduct(int id){
-        Optional<Product> productToRemove = products.stream()
-                .filter(p -> p.getId() == id)
-                .findFirst(); //TODO: Zrób findbyId i productUpdate tez z tego korzyta
+        Optional<Product> productToRemove = findById(id);
 
         if (productToRemove.isPresent()){
             products.remove(productToRemove.get());
@@ -31,8 +35,7 @@ public class ProductManager {
     }
 
     public void productUpdate(int id, String name, double price, int quantityAvaliable){
-        Optional<Product> productToUpdate = products.stream()
-                .filter(p -> p.getId() == id).findFirst();
+        Optional<Product> productToUpdate = findById(id);
 
         if (productToUpdate.isPresent()){
             Product product = productToUpdate.get();
