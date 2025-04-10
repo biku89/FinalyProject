@@ -18,6 +18,7 @@ public class Main {
         laptop.printInfo();
 
 
+
 //        productManager.addProduct(laptop);
 //        productManager.showInfoAboutAllProducts();
 
