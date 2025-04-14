@@ -35,6 +35,15 @@ public class Main {
         productManager.addProduct(laptop4);
         productManager.showInfoAboutAllProducts();
 
+        Cart cart = new Cart();
+        System.out.println("Testuje koszyk");
+
+        cart.addToCart(laptop, 1);
+        cart.addToCart(tv, 2);
+
+        cart.showClientCart();
+        cart.sumOrder();
+
 
 
     }
