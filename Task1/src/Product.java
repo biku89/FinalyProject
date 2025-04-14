@@ -21,8 +21,9 @@ public class Product {
         configurations.add(config);
     }
 
+
     public void printInfo() {
-        System.out.println("Produkt #" + id + ": " + name + ", cena: " + price + " zł, dostępność: " + quantityAvaliable + ", typ: " + type);
+        System.out.println("Produkt #" + id + ": " + name + ", cena: " + price + " zł, Ilość: " + quantityAvaliable + ", typ: " + type);
         if (!configurations.isEmpty()) {
             System.out.println("Dostępne konfiguracje:");
             for (int i = 0; i < configurations.size(); i++) {

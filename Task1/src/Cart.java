@@ -5,10 +5,11 @@ import java.util.Optional;
 public class Cart {
     private final List<Product> clientCart = new ArrayList<>();
 
-    public void addToCart(Product product) {
-        clientCart.add(product);
-        System.out.println("Produkt dodany do koszyka " + product.getName());
+    public void addToCart(Product product, int quantity) {
+
     }
+
+
 
     public void showClientCart() {
         if (clientCart.isEmpty()) {
