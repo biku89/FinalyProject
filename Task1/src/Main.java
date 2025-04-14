@@ -2,7 +2,7 @@ public class Main {
     public static void main(String[] args) {
         ProductManager productManager = new ProductManager();
 
-        Product laptop = new Product(1, "Laptop Dell", 4000,4, ProductType.COMPUTER);
+        Product laptop = new Product(1, "Laptop Dell", 3433.23,4, ProductType.COMPUTER);
         Configuration config1 = new Configuration();
         config1.add("Procesor", "Intel i7");
         config1.add("Ram","16Gb" );

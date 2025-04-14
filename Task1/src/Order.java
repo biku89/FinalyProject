@@ -1,32 +1,34 @@
+import java.math.BigDecimal;
 import java.util.List;
 
 public class Order {
     private String clientName;
-    private List<Product> orderItems;
-    private double priceSummary;
+    private List<CartItem> orderItems;
+    private BigDecimal priceSummary;
 
-    public Order(String clientName, List<Product> orderItems) {
+    public Order(String clientName, List<CartItem> orderItems) {
         this.clientName = clientName;
         this.orderItems = orderItems;
         this.priceSummary = sumOrder();
     }
 
-    private double sumOrder() {
+    private BigDecimal sumOrder() {
         return orderItems.stream()
-                .mapToDouble(Product::getPrice).sum();
+                .map(CartItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public void printOrderSummary() {
         System.out.println("Zamówienie dla: " + clientName);
         System.out.println("Produkty: ");
-        for (Product product : orderItems) {
-            System.out.println(" - " + product.getName() + ", cena: " + product.getPrice());
+        for (CartItem item : orderItems) {
+            System.out.println(" - " + item.getProduct().getName()
+                    +", Ilość : " + item.getQuantity()
+                    + ", cena: " + item.getTotalPrice() + " zł ");
         }
         System.out.println("Suma zamówienia: " + priceSummary);
     }
-    //TODO: przy hajsie użyj bigdecimal
 
-    public double getPriceSummary() {
+    public BigDecimal getPriceSummary() {
         return priceSummary;
     }
 }

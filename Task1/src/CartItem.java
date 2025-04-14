@@ -1,3 +1,5 @@
+import java.math.BigDecimal;
+
 public class CartItem {
     private Product product;
     private int quantity;
@@ -23,8 +25,8 @@ public class CartItem {
         this.quantity = quantity;
     }
 
-    public double getTotalPrice(){
-        return product.getPrice() * getQuantity();
+    public BigDecimal getTotalPrice(){
+        return product.getPrice().multiply(BigDecimal.valueOf(quantity));
     }
 
     public void printItem(){

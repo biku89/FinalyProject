@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +35,7 @@ public class ProductManager {
                 .forEach(Product::printInfo);
     }
 
-    public void productUpdate(int id, String name, double price, int quantityAvaliable){
+    public void productUpdate(int id, String name, BigDecimal price, int quantityAvaliable){
         Optional<Product> productToUpdate = findById(id);
 
         if (productToUpdate.isPresent()){

@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,8 +52,8 @@ public class Cart {
     }
 
 
-    public double sumOrder() {
-        return clientCart.stream().mapToDouble(CartItem::getTotalPrice).sum();
+    public BigDecimal sumOrder() {
+        return clientCart.stream().map(CartItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public List<CartItem> getClientCart() {
