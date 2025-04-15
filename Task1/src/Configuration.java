@@ -23,5 +23,8 @@ public class Configuration {
         specification.forEach((k, v) -> System.out.println("- " + k + ": " + v));
     }
 
+    public Map<String, String> getSpecification() {
+        return specification;
     }
+}
 

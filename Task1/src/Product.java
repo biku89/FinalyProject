@@ -76,4 +76,7 @@ public class Product {
         this.type = type;
     }
 
+    public List<Configuration> getConfigurations() {
+        return configurations;
+    }
 }

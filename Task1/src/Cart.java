@@ -25,6 +25,17 @@ public class Cart {
                 .findFirst();
     }
 
+    public void removeProductFromCart(int productid){
+        Optional<CartItem> itemToRemove = findByProductId(productid);
+
+        if (itemToRemove.isPresent()){
+            clientCart.remove(itemToRemove.get());
+            System.out.println("Usunięto produkt z koszyka");
+        } else {
+            System.out.println("Nie znaleziono produktu");
+        }
+    }
+
 
 
     public void showClientCart() {
