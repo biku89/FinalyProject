@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Configuration {
     private Map<String, String> specification = new HashMap<>();
@@ -25,6 +22,18 @@ public class Configuration {
 
     public Map<String, String> getSpecification() {
         return specification;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Configuration that = (Configuration) o;
+        return Objects.equals(specification, that.specification);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(specification);
     }
 }
 

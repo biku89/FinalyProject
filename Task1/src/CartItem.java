@@ -2,11 +2,17 @@ import java.math.BigDecimal;
 
 public class CartItem {
     private Product product;
+    private Configuration configuration;
     private int quantity;
 
-    public CartItem(Product product, int quantity) {
+    public CartItem(Product product,Configuration configuration, int quantity) {
         this.product = product;
+        this.configuration = configuration;
         this.quantity = quantity;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     public Product getProduct() {
@@ -30,6 +36,12 @@ public class CartItem {
     }
 
     public void printItem(){
-        System.out.println(product.getName() + " Ilość " + quantity);
+        product.printInfo();
+        if (configuration != null){
+            System.out.println("Wybrana konfiguracja: ");
+            configuration.printConfiguration();
+        }
+        System.out.println("Ilość: " + quantity);
+
     }
 }

@@ -6,27 +6,27 @@ import java.util.Optional;
 public class Cart {
     private final List<CartItem> clientCart = new ArrayList<>();
 
-    public void addToCart(Product product, int quantity) {
-        Optional<CartItem> items = findByProductId(product.getId());
+    public void addToCart(Product product,Configuration configuration, int quantity) {
+        Optional<CartItem> items = findByProductId(product.getId(), configuration);
 
         if (items.isPresent()){
             CartItem item = items.get();
             item.setQuantity(item.getQuantity() + quantity);
         } else {
-            clientCart.add(new CartItem(product, quantity));
+            clientCart.add(new CartItem(product, configuration, quantity));
         }
         System.out.println("Dodano do koszyka produkt " + product.getName() + " Ilość " + quantity);
 
     }
 
-    private Optional<CartItem> findByProductId(int productid){
+    private Optional<CartItem> findByProductId(int productid, Configuration configuration){
         return clientCart.stream()
-                .filter(i -> i.getProduct().getId() == productid)
+                .filter(i -> i.getProduct().getId() == productid && i.getConfiguration().equals(configuration))
                 .findFirst();
     }
 
-    public void removeProductFromCart(int productid){
-        Optional<CartItem> itemToRemove = findByProductId(productid);
+    public void removeProductFromCart(int productid, Configuration configuration){
+        Optional<CartItem> itemToRemove = findByProductId(productid, configuration);
 
         if (itemToRemove.isPresent()){
             clientCart.remove(itemToRemove.get());
