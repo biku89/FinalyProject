@@ -35,4 +35,8 @@ public class Order {
     public BigDecimal getPriceSummary() {
         return priceSummary;
     }
+
+    public String getClientName() {
+        return clientName;
+    }
 }

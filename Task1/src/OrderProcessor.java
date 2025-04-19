@@ -11,6 +11,12 @@ public class OrderProcessor {
         return newOrder;
     }
 
+    public void processOrder(Order order){
+        OrderThread orderThread = new OrderThread(order);
+        Thread thread = new Thread(orderThread);
+        thread.start();
+    }
+
     public void generateInvoice(Order order){
         System.out.println("Faktura : ");
         order.printOrderSummary();

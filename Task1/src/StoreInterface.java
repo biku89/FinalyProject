@@ -38,7 +38,11 @@ public class StoreInterface {
                         }
                         String clientName = ("Jan Kowalski");
                         Order order = orderProcessor.createOrder(clientName, cart);
+
                         orderProcessor.generateInvoice(order);
+
+                        orderProcessor.processOrder(order);
+
                     } catch (OrderProcessException e){
                         System.err.println("Błąd " + e.getMessage());
                     } catch (Exception e ){
