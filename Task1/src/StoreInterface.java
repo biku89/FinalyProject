@@ -28,78 +28,102 @@ public class StoreInterface {
                     cart.showClientCart();
                 }
                 case 4 -> {
-                    if (cart.getClientCart().isEmpty()) {
-                        System.out.println("Koszyk jest pusty");
-                        return;
-                    }
-                    cart.showClientCart();
-                    System.out.println("Podaj id produktu do usunięcia: ");
-                    int id = scanner.nextInt();
-                    scanner.nextLine();
-                    List<CartItem> cartItems = cart.getClientCart();
-                    List<Configuration> clientConfigs = cartItems.stream()
-                            .filter(item -> item.getProduct().getId() == id)
-                            .map(CartItem::getConfiguration).toList();
-
-                    if (clientConfigs.isEmpty()){
-                        System.out.println("Nie znaleziono produktu o podanym id");
-                        break;
-                    }
-                    System.out.println("Podaj numer kofniguracji do usunięcia");
-                    int numberCfg = scanner.nextInt();
-                    scanner.nextLine();
-
-                    Configuration cfgToRemove = clientConfigs.get(numberCfg - 1);
-                    cart.removeProductFromCart(id, cfgToRemove);
+                    removeProductFromCart();
 
                 }
                 case 5 -> {
-                    if (cart.getClientCart().isEmpty()) {
-                        System.out.println("Koszyk jest pusty");
-                        return;
+                    try {
+                        if (cart.getClientCart().isEmpty()) {
+                            throw new OrderProcessException("Koszyk jest pusty.");
+                        }
+                        String clientName = ("Jan Kowalski");
+                        Order order = orderProcessor.createOrder(clientName, cart);
+                        orderProcessor.generateInvoice(order);
+                    } catch (OrderProcessException e){
+                        System.err.println("Błąd " + e.getMessage());
+                    } catch (Exception e ){
+                        System.err.println("Wystąpił błąd przy skłądaniu zamówienia " + e.getMessage());
                     }
-                    String clientName = ("Jan Kowalski");
-                    Order order = orderProcessor.createOrder(clientName, cart);
-                    orderProcessor.generateInvoice(order);
                 }
-
             }
         }
     }
 
-    private void addProductToCart() {
-        System.out.println("Podaj id produktu");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-
-        Optional<Product> OptionalProduct = productManager.findById(id);
-        if (OptionalProduct.isEmpty()) {
-            System.out.println("Nie znaleziono produktu");
-            return;
-        }
-        Product product = OptionalProduct.get();
-
-        List<Configuration> configs = product.getConfigurations();
-        Configuration selectConfig = null;
-        if (!configs.isEmpty()) {
-            System.out.println("Podaj numer konfiguracji ");
-            int chooseCfgNumber = scanner.nextInt();
-            scanner.nextLine();
-            if (chooseCfgNumber < 1 || chooseCfgNumber > configs.size()) {
-                System.out.println("Nie prawidłowy wybór konfiguracji");
-                return;
+    private void removeProductFromCart() {
+        try {
+            if (cart.getClientCart().isEmpty()) {
+                throw new EmptyCartException("Koszyk jest pusty");
             }
-            selectConfig = configs.get(chooseCfgNumber - 1);
+            cart.showClientCart();
+            System.out.println("Podaj id produktu do usunięcia: ");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+            List<CartItem> cartItems = cart.getClientCart();
+            List<Configuration> clientConfigs = cartItems.stream()
+                    .filter(item -> item.getProduct().getId() == id)
+                    .map(CartItem::getConfiguration).toList();
 
-            System.out.println("Podaj ilość: ");
-            int quantity = scanner.nextInt();
+            if (clientConfigs.isEmpty()){
+                throw new ProductNotFoundException("Nie znaleziono danego produktu o id: " + id);
+            }
 
-            if (quantity > product.getQuantityAvaliable()) {
-                System.out.println("Brak takiej ilości sztuk na magazynie");
-            } else {
+
+            System.out.println("Podaj numer kofniguracji do usunięcia");
+            int numberCfg = scanner.nextInt();
+            scanner.nextLine();
+
+            if (numberCfg < 1 || numberCfg > clientConfigs.size()){
+                throw new InvalidConfigurationException("Błędny numer konfiguracji");
+            }
+
+            Configuration cfgToRemove = clientConfigs.get(numberCfg - 1);
+            cart.removeProductFromCart(id, cfgToRemove);
+        } catch (EmptyCartException | ProductNotFoundException | InvalidConfigurationException e){
+            System.err.println("Błąd; " + e.getMessage());
+        } catch (Exception e){
+            System.err.println("Wystąpił błąd przy usuwaniu produktu " + e.getMessage());
+        }
+
+    }
+
+    private void addProductToCart() {
+        try {
+            System.out.println("Podaj id produktu");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+
+            Optional<Product> OptionalProduct = productManager.findById(id);
+            if (OptionalProduct.isEmpty()) {
+                throw new ProductNotFoundException("Nie znaleziono produktu: " + id);
+            }
+
+            Product product = OptionalProduct.get();
+
+            List<Configuration> configs = product.getConfigurations();
+            Configuration selectConfig = null;
+
+            if (!configs.isEmpty()) {
+                System.out.println("Podaj numer konfiguracji ");
+                int chooseCfgNumber = scanner.nextInt();
+                scanner.nextLine();
+                if (chooseCfgNumber < 1 || chooseCfgNumber > configs.size()) {
+                    throw new IllegalArgumentException("NIeprawidłowy numer konfiguracji ");
+                }
+                selectConfig = configs.get(chooseCfgNumber - 1);
+
+                System.out.println("Podaj ilość: ");
+                int quantity = scanner.nextInt();
+
+                if (quantity > product.getQuantityAvaliable()) {
+                    throw new InsufficientStockMagazineException("Brak wystarczającej ilości sztuk na magazynie");
+                }
                 cart.addToCart(product, selectConfig, quantity);
                 System.out.println("Produtk: " + product.getName() + " W ilości: " + quantity + " Został dodany do koszyka ");
             }
+        } catch (ProductNotFoundException |InsufficientStockMagazineException | IllegalArgumentException e){
+            System.err.println("Błąd: " + e.getMessage());
+        } catch (Exception e){
+            System.err.println("Wystąpił błąd: " + e.getMessage());
         }
     }
 
