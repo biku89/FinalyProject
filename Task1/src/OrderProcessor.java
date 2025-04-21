@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -6,8 +7,13 @@ public class OrderProcessor {
 
     public Order createOrder(String clientName, Cart cart) {
         Order newOrder = new Order(clientName, cart.getClientCart());
+
+        Discount discount = new Discount();
+        BigDecimal discounted = discount.applyDiscountTenPercent(newOrder.getPriceSummary());
+        newOrder.setPriceAfterDiscount(discounted);
+
         orders.add(newOrder);
-        System.out.println("Udało się przetworzyć zamówienie.");
+        System.out.println("Zamówienie zostało złożone.");
         return newOrder;
     }
 
@@ -15,6 +21,11 @@ public class OrderProcessor {
         OrderThread orderThread = new OrderThread(order);
         Thread thread = new Thread(orderThread);
         thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            System.err.println("Błąd przy przetwarzaniu zamówienia");
+        }
     }
 
     public void generateInvoice(Order order){

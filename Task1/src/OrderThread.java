@@ -13,7 +13,6 @@ public class OrderThread implements Runnable {
             System.out.println("Przetwarzania zostało przerwane " + e.getMessage());
             return;
         }
-        System.out.println("Zamówienie zakończono dla: " + order.getClientName());
-        order.printOrderSummary();
+        System.out.println("Zakończono przetwarzania zamówienia dla: " + order.getClientName());
     }
 }
