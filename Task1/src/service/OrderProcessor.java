@@ -1,10 +1,25 @@
+package service;
+
+import model.Order;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Klasa odpowiedzialna za przetwarzanie zamówień, generowanie faktur oraz ich zarządzaniem.
+ */
+
 public class OrderProcessor {
     private final List<Order> orders = new ArrayList<>();
 
+    /**
+     * Tworzy nowe zamówienie na podsrawie zawartości koszyka. Rabat jest stosowany jeśli są spełnione warunki
+     *
+     * @param clientName - imię i nazwisko klienta
+     * @param cart       - koszyk klienta
+     * @return - zwraca utworzone zamówienie
+     */
     public Order createOrder(String clientName, Cart cart) {
         Order newOrder = new Order(clientName, cart.getClientCart());
 
@@ -17,7 +32,13 @@ public class OrderProcessor {
         return newOrder;
     }
 
-    public void processOrder(Order order){
+    /**
+     * Przetwarzanie zamówień w osobnych wątkach
+     * Każde zamówienie czeka aż poprzednie skończy się przetwarzać
+     *
+     * @param order - zamówienie które będzie przetwarzane
+     */
+    public void processOrder(Order order) {
         OrderThread orderThread = new OrderThread(order);
         Thread thread = new Thread(orderThread);
         thread.start();
@@ -28,13 +49,18 @@ public class OrderProcessor {
         }
     }
 
-    public void generateInvoice(Order order){
+    /**
+     * Generuje fakturę dla danego zamówienia i wyświetla jej szczegóły.
+     *
+     * @param order zamówienie na podstawie którego jest generowana faktura.
+     */
+    public void generateInvoice(Order order) {
         System.out.println("Faktura : ");
         order.printOrderSummary();
     }
 
-    public void showAllOrders(){
-        if (orders.isEmpty()){
+    public void showAllOrders() {
+        if (orders.isEmpty()) {
             System.out.println("Brak złożonych zamówień");
         } else {
             System.out.println("Złożone zamówienia: ");

@@ -1,5 +1,10 @@
+package model;
+
 import java.math.BigDecimal;
 
+/**
+ * Klasa reprezentuje pojdeynczy element w koszyku z jego konfiguracja oraz ilością.
+ */
 public class CartItem {
     private Product product;
     private Configuration configuration;
@@ -31,10 +36,17 @@ public class CartItem {
         this.quantity = quantity;
     }
 
+    /**
+     * Obliczna łączną cene dla danego produktu i ilości.
+     * @return łączna cena
+     */
     public BigDecimal getTotalPrice(){
         return product.getPrice().multiply(BigDecimal.valueOf(quantity));
     }
 
+    /**
+     * Wyświetla informację o produkcie, konfiguracji i jego ilości.
+     */
     public void printItem(){
         product.printInfo();
         if (configuration != null){

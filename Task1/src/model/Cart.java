@@ -1,15 +1,25 @@
+package model;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+//Klasa reprezentujaca koszyk klienta w której jest przechowywana lista
 public class Cart {
     private final List<CartItem> clientCart = new ArrayList<>();
 
-    public void addToCart(Product product,Configuration configuration, int quantity) {
+    /**
+     * Metoda odpowiedzialna za dodanie produktu z wybraną konfiguracją i okrśloną ilością.
+     *
+     * @param product       - produkt do dodania
+     * @param configuration - konfiguracja produktu
+     * @param quantity      - ilość danego produktu
+     */
+    public void addToCart(Product product, Configuration configuration, int quantity) {
         Optional<CartItem> items = findByProductId(product.getId(), configuration);
 
-        if (items.isPresent()){
+        if (items.isPresent()) {
             CartItem item = items.get();
             item.setQuantity(item.getQuantity() + quantity);
         } else {
@@ -19,16 +29,22 @@ public class Cart {
 
     }
 
-    private Optional<CartItem> findByProductId(int productid, Configuration configuration){
+    private Optional<CartItem> findByProductId(int productid, Configuration configuration) {
         return clientCart.stream()
                 .filter(i -> i.getProduct().getId() == productid && i.getConfiguration().equals(configuration))
                 .findFirst();
     }
 
-    public void removeProductFromCart(int productid, Configuration configuration){
+    /**
+     * Usuwanie produktu z koszyka po id i konfiguracji
+     *
+     * @param productid     - id produktu
+     * @param configuration - konfiguracja produktu
+     */
+    public void removeProductFromCart(int productid, Configuration configuration) {
         Optional<CartItem> itemToRemove = findByProductId(productid, configuration);
 
-        if (itemToRemove.isPresent()){
+        if (itemToRemove.isPresent()) {
             clientCart.remove(itemToRemove.get());
             System.out.println("Usunięto produkt z koszyka");
         } else {
@@ -36,8 +52,9 @@ public class Cart {
         }
     }
 
-
-
+    /**
+     * Wyświetla koszyk klienta
+     */
     public void showClientCart() {
         if (clientCart.isEmpty()) {
             System.out.println("Koszyk jest pusty");
@@ -47,7 +64,7 @@ public class Cart {
         clientCart.stream()
                 .forEach(CartItem::printItem);
 
-        System.out.println("Podsumowanie: " + sumOrder() );
+        System.out.println("Podsumowanie: " + sumOrder());
 
     }
 
@@ -61,7 +78,6 @@ public class Cart {
         }
 
     }
-
 
     public BigDecimal sumOrder() {
         return clientCart.stream().map(CartItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);

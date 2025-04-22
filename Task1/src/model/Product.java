@@ -1,7 +1,12 @@
+package model;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Klasa reprezentująca produkt dostępny w sklepie. Zawiera takie informację jak: cena,ilość, typ produktu i jego możliwa konfiguracja
+ */
 public class Product {
     private int id;
     private String name;
@@ -18,11 +23,18 @@ public class Product {
         this.type = type;
     }
 
+    /**
+     * Dodaje nową konfigurację produktu
+     *
+     * @param config konfiguracja
+     */
     public void addConfiguration(Configuration config) {
         configurations.add(config);
     }
 
-
+    /**
+     * Wyświetla informację o danym produkcie.
+     */
     public void printInfo() {
         System.out.println("Produkt #" + id + ": " + name + ", cena: " + price + " zł, Ilość: " + quantityAvaliable + ", typ: " + type);
         if (!configurations.isEmpty()) {

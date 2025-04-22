@@ -1,7 +1,12 @@
+package model;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Reprezentacja zamówień klienta która zwiera listę produktów, datę ich złożenia oraz sumę zamówienia.
+ */
 public class Order {
     private String clientName;
     private List<CartItem> orderItems;
@@ -16,11 +21,18 @@ public class Order {
         this.orderDate = LocalDateTime.now();
     }
 
+    /**
+     * Oblicza sumę zamówienia bez rabatu
+     * @return całkowita wartość zamówienia
+     */
     private BigDecimal sumOrder() {
         return orderItems.stream()
                 .map(CartItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    /**
+     * Wyświetla podsumomowanie zakupów dla pojedynczego klienta z uwzględnieniem rabatów
+     */
     public void printOrderSummary() {
         System.out.println("Zamówienie dla: " + clientName);
         System.out.println("Data: " + orderDate);

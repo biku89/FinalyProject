@@ -1,3 +1,10 @@
+package thread;
+
+import model.Order;
+
+/**
+ * Klasa reprezentująca wątek do przetwarzania zamówienia.
+ */
 public class OrderThread implements Runnable {
     private Order order;
 
@@ -5,6 +12,9 @@ public class OrderThread implements Runnable {
         this.order = order;
     }
 
+    /**
+     * Metoda wykonywana w osobnym wątku z symulacją opóźnienia
+     */
     public void run(){
         System.out.println("Przetwarzanie zamówienia dla: " + order.getClientName());
         try {

@@ -1,16 +1,29 @@
+package model;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Klasa przechowująca historię złożonych zamówień.
+ */
 public class StorageOrder {
-    List<Order> ordersHistory = new ArrayList<>();
+    private List<Order> ordersHistory = new ArrayList<>();
 
-    public void saveOrder(Order order){
+    /**
+     * Dodaje zamówwienie do listy historii.
+     *
+     * @param order - zamówienie do zapisania.
+     */
+    public void saveOrder(Order order) {
         ordersHistory.add(order);
         System.err.println("Zapisano zamówienie");
     }
 
-    public void showHistoryOrder(){
-        if (ordersHistory.isEmpty()){
+    /**
+     * Wyświetla historię wszystkich zamówień
+     */
+    public void showHistoryOrder() {
+        if (ordersHistory.isEmpty()) {
             System.out.println("Historia zamówień jest pusta");
             return;
         }
