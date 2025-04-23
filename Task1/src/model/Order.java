@@ -2,7 +2,10 @@ package model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.TimeZone;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Reprezentacja zamówień klienta która zwiera listę produktów, datę ich złożenia oraz sumę zamówienia.
@@ -11,14 +14,14 @@ public class Order {
     private String clientName;
     private List<CartItem> orderItems;
     private BigDecimal priceSummary;
-    private LocalDateTime orderDate;
+    private ZonedDateTime orderDate;
     private BigDecimal priceAfterDiscount;
 
     public Order(String clientName, List<CartItem> orderItems) {
         this.clientName = clientName;
         this.orderItems = orderItems;
         this.priceSummary = sumOrder();
-        this.orderDate = LocalDateTime.now();
+        this.orderDate = ZonedDateTime.now(TimeZone.getDefault().toZoneId());
     }
 
     /**
@@ -35,7 +38,9 @@ public class Order {
      */
     public void printOrderSummary() {
         System.out.println("Zamówienie dla: " + clientName);
-        System.out.println("Data: " + orderDate);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm z");
+        System.out.println("Data: " + orderDate.format(formatter));
         System.out.println("Produkty: ");
 
         for (CartItem item : orderItems) {
