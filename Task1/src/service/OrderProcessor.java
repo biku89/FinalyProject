@@ -2,11 +2,12 @@ package service;
 
 import model.Cart;
 import model.Order;
+import model.StorageOrder;
 import thread.OrderThread;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Klasa odpowiedzialna za przetwarzanie zamówień, generowanie faktur oraz ich zarządzaniem.
@@ -14,6 +15,7 @@ import java.util.List;
 
 public class OrderProcessor {
     private final List<Order> orders = new ArrayList<>();
+    private final StorageOrder storageOrder = new StorageOrder();
 
     /**
      * Tworzy nowe zamówienie na podsrawie zawartości koszyka. Rabat jest stosowany jeśli są spełnione warunki
@@ -30,6 +32,8 @@ public class OrderProcessor {
         newOrder.setPriceAfterDiscount(discounted);
 
         orders.add(newOrder);
+        storageOrder.saveOrder(newOrder);
+
         System.out.println("Zamówienie zostało złożone.");
         return newOrder;
     }
@@ -61,6 +65,10 @@ public class OrderProcessor {
         order.printOrderSummary();
     }
 
+    public CompletableFuture<Void> generateInvoiceAsyn(Order order) {
+        return CompletableFuture.runAsync(() -> generateInvoice(order));
+    }
+
     public void showAllOrders() {
         if (orders.isEmpty()) {
             System.out.println("Brak złożonych zamówień");
@@ -68,6 +76,9 @@ public class OrderProcessor {
             System.out.println("Złożone zamówienia: ");
             orders.forEach(Order::printOrderSummary);
         }
+    }
+    public void printOrderHistory(){
+        storageOrder.showHistoryOrder();
     }
 
     public List<Order> getOrders() {

@@ -32,6 +32,10 @@ public class StoreInterface {
                 case 3 -> cart.showClientCart();
                 case 4 -> removeProductFromCart();
                 case 5 -> placeOrder();
+                case 6 ->{
+                    System.out.println("Twoja historia zamówień: ");
+                        orderProcessor.printOrderHistory();
+                }
                 case 0 -> {
                     System.out.println("Zamykamy aplikację");
                     running = false;
@@ -55,8 +59,11 @@ public class StoreInterface {
             orderProcessor.processOrder(order1);
             orderProcessor.processOrder(order2);
 
-            orderProcessor.generateInvoice(order1);
-            orderProcessor.generateInvoice(order2);
+            orderProcessor.generateInvoiceAsyn(order1).join();
+            orderProcessor.generateInvoiceAsyn(order2).join();
+
+//            orderProcessor.generateInvoice(order1);
+//            orderProcessor.generateInvoice(order2);
 
         } catch (OrderProcessException e) {
             System.err.println("Błąd " + e.getMessage());
@@ -151,6 +158,7 @@ public class StoreInterface {
         System.out.println("3 - Pokaż koszyk");
         System.out.println("4 - Usuń produkt z koszyka");
         System.out.println("5 - Złóż zamówienie");
+        System.out.println("6 - Pokaż historię zamówień");
         System.out.println("0 - Wyjście");
         System.out.println("Wybierz opcję");
     }

@@ -61,9 +61,12 @@ public class Cart {
             return;
         }
         System.out.println("Zawartość koszyka: ");
-        clientCart.stream()
-                .forEach(CartItem::printItem);
-
+        for (CartItem item : clientCart){
+            System.out.println("Produkt: " + item.getProduct().getName());
+            System.out.println("Wybrana konfiguracja: " );
+            item.getConfiguration().printConfiguration();
+            System.out.println("Ilość: " + item.getQuantity());
+        }
         System.out.println("Podsumowanie: " + sumOrder());
 
     }
