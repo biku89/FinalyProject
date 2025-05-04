@@ -4,8 +4,10 @@ import service.OrderProcessor;
 import service.ProductManager;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Klasa odpowiedzialna za interfejs użytkownika.
@@ -18,30 +20,37 @@ public class StoreInterface {
     private Scanner scanner = new Scanner(System.in);
 
     public void start() {
-        productsInMagazine();
+        initializeProducts();
 
         boolean running = true;
 
         while (running) {
-            showmenu();
-            int option = scanner.nextInt();
+            showMenu();
+            try {
+                int option = scanner.nextInt();
+                scanner.nextLine();
 
-            switch (option) {
-                case 1 -> productManager.showInfoAboutAllProducts();
-                case 2 -> addProductToCart();
-                case 3 -> cart.showClientCart();
-                case 4 -> removeProductFromCart();
-                case 5 -> placeOrder();
-                case 6 ->{
-                    System.out.println("Twoja historia zamówień: ");
+                switch (option) {
+                    case 1 -> productManager.showInfoAboutAllProducts();
+                    case 2 -> addProductToCart();
+                    case 3 -> cart.showClientCart();
+                    case 4 -> removeProductFromCart();
+                    case 5 -> placeOrder();
+                    case 6 -> {
+                        System.out.println("Twoja historia zamówień: ");
                         orderProcessor.printOrderHistory();
+                    }
+                    case 0 -> {
+                        System.out.println("Zamykamy aplikację");
+                        running = false;
+                    }
+                    default -> System.out.println("Nie prawidłowy wybór");
                 }
-                case 0 -> {
-                    System.out.println("Zamykamy aplikację");
-                    running = false;
-                }
-
+            } catch (Exception e) {
+                System.out.println("Podaj poprawną cyfrę");
+                scanner.nextLine();
             }
+
         }
     }
 
@@ -50,20 +59,15 @@ public class StoreInterface {
             if (cart.getClientCart().isEmpty()) {
                 throw new OrderProcessException("Koszyk jest pusty.");
             }
+
+            String promoCode = usePromoCode();
+
             String clientName1 = ("Jan Kowalski");
-            Order order1 = orderProcessor.createOrder(clientName1, cart);
-
-            String clientName2 = ("Anna Nowak");
-            Order order2 = orderProcessor.createOrder(clientName2, cart);
-
+            Order order1 = orderProcessor.createOrder(clientName1, cart, promoCode);
             orderProcessor.processOrder(order1);
-            orderProcessor.processOrder(order2);
+            CompletableFuture<String> proces1 = orderProcessor.generateInvoiceAsync(order1);
 
-            orderProcessor.generateInvoiceAsyn(order1).join();
-            orderProcessor.generateInvoiceAsyn(order2).join();
-
-//            orderProcessor.generateInvoice(order1);
-//            orderProcessor.generateInvoice(order2);
+            proces1.join();
 
         } catch (OrderProcessException e) {
             System.err.println("Błąd " + e.getMessage());
@@ -72,36 +76,51 @@ public class StoreInterface {
         }
     }
 
+    private String usePromoCode() {
+        while (true) {
+            System.out.println("Czy posiadasz kod promocyjny ? (y/n)");
+            String choice = scanner.nextLine();
+
+            if (choice.equals("n")){
+                return "";
+            } else if (choice.equals("y")) {
+                System.out.println("Podaj kod: ");
+                String promoCode = scanner.nextLine();
+
+                try {
+                    isValidPromoCode(promoCode);
+                    System.out.println("Użyto kodu: " + promoCode);
+                    return promoCode;
+                } catch (InvalidPromoCodeException e) {
+                    System.err.println("Błąd: " + e.getMessage());
+                    return "";
+                }
+
+            } else {
+                System.out.println("Nie prawidłowa odpowiedź! wpisz 'y' lub 'n'");
+            }
+        }
+    }
+
+    private void isValidPromoCode(String promoCode) {
+        if (!"PROMO20".equalsIgnoreCase(promoCode)){
+            throw new InvalidPromoCodeException("Kod: " + promoCode + " Jest nieprawidłowy");
+        }
+    }
+
 
     private void removeProductFromCart() {
         try {
-            if (cart.getClientCart().isEmpty()) {
-                throw new EmptyCartException("Koszyk jest pusty");
-            }
+            cartIsNotEmpty();
             cart.showClientCart();
-            System.out.println("Podaj id produktu do usunięcia: ");
-            int id = scanner.nextInt();
-            scanner.nextLine();
-            List<CartItem> cartItems = cart.getClientCart();
-            List<Configuration> clientConfigs = cartItems.stream()
-                    .filter(item -> item.getProduct().getId() == id)
-                    .map(CartItem::getConfiguration).toList();
 
-            if (clientConfigs.isEmpty()) {
-                throw new ProductNotFoundException("Nie znaleziono danego produktu o id: " + id);
-            }
+            int productId = getProductIdFromUser();
+            List<Configuration> configurations = getConfigurationsForProductId(productId);
 
+            int configNumber = getNumberConfigFromUser(configurations.size());
+            Configuration configToRemove = configurations.get(configNumber);
 
-            System.out.println("Podaj numer kofniguracji do usunięcia");
-            int numberCfg = scanner.nextInt();
-            scanner.nextLine();
-
-            if (numberCfg < 1 || numberCfg > clientConfigs.size()) {
-                throw new InvalidConfigurationException("Błędny numer konfiguracji");
-            }
-
-            Configuration cfgToRemove = clientConfigs.get(numberCfg - 1);
-            cart.removeProductFromCart(id, cfgToRemove);
+            cart.removeProductFromCart(productId, configToRemove);
         } catch (EmptyCartException | ProductNotFoundException | InvalidConfigurationException e) {
             System.err.println("Błąd; " + e.getMessage());
         } catch (Exception e) {
@@ -110,50 +129,126 @@ public class StoreInterface {
 
     }
 
-    private void addProductToCart() {
-        try {
-            System.out.println("Podaj id produktu");
-            int id = scanner.nextInt();
-            scanner.nextLine();
+    private int getNumberConfigFromUser(int size) {
+        System.out.println("Podaj numer konfiguracji do usunięcia: ");
+        int number = scanner.nextInt();
+        scanner.nextLine();
 
-            Optional<Product> OptionalProduct = productManager.findById(id);
-            if (OptionalProduct.isEmpty()) {
-                throw new ProductNotFoundException("Nie znaleziono produktu: " + id);
-            }
+        if (number < 1 || number > size) {
+            throw new InvalidConfigurationException("Błędny numer konfiguracji");
+        }
 
-            Product product = OptionalProduct.get();
+        return number - 1;
+    }
 
-            List<Configuration> configs = product.getConfigurations();
-            Configuration selectConfig = null;
+    private List<Configuration> getConfigurationsForProductId(int productId) throws ProductNotFoundException {
+        List<Configuration> configs = cart.getClientCart().stream()
+                .filter(item -> item.getProduct().getId() == productId)
+                .map(CartItem::getConfiguration)
+                .toList();
 
-            if (!configs.isEmpty()) {
-                System.out.println("Podaj numer konfiguracji ");
-                int chooseCfgNumber = scanner.nextInt();
-                scanner.nextLine();
-                if (chooseCfgNumber < 1 || chooseCfgNumber > configs.size()) {
-                    throw new IllegalArgumentException("NIeprawidłowy numer konfiguracji ");
-                }
-                selectConfig = configs.get(chooseCfgNumber - 1);
+        if (configs.isEmpty()) {
+            throw new ProductNotFoundException("Nie znaleziono danego produktu o id: " + productId);
+        }
+        return configs;
+    }
 
-                System.out.println("Podaj ilość: ");
-                int quantity = scanner.nextInt();
+    private int getProductIdFromUser() {
+        System.out.println("Podaj id produktu do usunięcia: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        return id;
+    }
 
-                if (quantity > product.getQuantityAvaliable()) {
-                    throw new InsufficientStockMagazineException("Brak wystarczającej ilości sztuk na magazynie");
-                }
-                cart.addToCart(product, selectConfig, quantity);
-                System.out.println("Produtk: " + product.getName() + " W ilości: " + quantity + " Został dodany do koszyka ");
-            }
-        } catch (ProductNotFoundException | InsufficientStockMagazineException | IllegalArgumentException e) {
-            System.err.println("Błąd: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Wystąpił błąd: " + e.getMessage());
+    private void cartIsNotEmpty() {
+        if (cart.getClientCart().isEmpty()) {
+            throw new EmptyCartException("Koszyk jest pusty");
         }
     }
 
-    private void showmenu() {
+    private void addProductToCart() {
+        try {
+            Product product = chooseProduct();
+            Configuration config = chooseConfiguration(product);
+            int quantity = chooseQunatity(product);
+
+            cart.addToCart(product, config, quantity);
+            System.out.println("Produtk: " + product.getName() + " W ilości: " + quantity + " Został dodany do koszyka ");
+        } catch (ProductNotFoundException | InsufficientStockMagazineException | IllegalArgumentException e) {
+            System.err.println("Błąd: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Wystąpił nieznany błąd: " + e.getMessage());
+        }
+    }
+
+    private int chooseQunatity(Product product) {
+        System.out.println("Podaj ilość:");
+        int quantity = scanner.nextInt();
+        scanner.nextLine();
+
+        if (quantity > product.getQuantityAvaliable()) {
+            throw new InsufficientStockMagazineException("Brak wystarczającej ilości sztuk na magazynie.");
+        }
+        return quantity;
+    }
+
+    private Configuration chooseConfiguration(Product product) {
+        Configuration config = new Configuration();
+        Map<ConfigurationType, List<String>> options = product.getAllOptions();
+
+        if (options.isEmpty()) {
+            System.out.println("Ten produkt nie posiada dodatkowych opcji konfiguracji.");
+            return config;
+        }
+
+        System.out.println("Skonfiguruj produkt: " + product.getName());
+
+        options.forEach((type, values) -> {
+            printOptions(type, values);
+            int userChoice = getUserChoice(type, values.size());
+            config.add(type, values.get(userChoice - 1));
+        });
+
+        return config;
+    }
+
+    private void printOptions(ConfigurationType type, List<String> values) {
+        System.out.println("Dostępne opcje dla " + type + ":");
+        for (int i = 0; i < values.size(); i++) {
+            System.out.println("  " + (i + 1) + " - " + values.get(i));
+        }
+    }
+
+    private int getUserChoice(ConfigurationType type, int max) {
+        int chooseNumber = -1;
+        while (chooseNumber < 1 || chooseNumber > max) {
+            System.out.print("Wybierz opcję (1-" + max + ") dla " + type + ": ");
+            if (scanner.hasNextInt()) {
+                chooseNumber = scanner.nextInt();
+            } else {
+                System.out.println("Spróbuj ponownie.");
+            }
+            scanner.nextLine();
+        }
+        return chooseNumber;
+    }
+
+
+    private Product chooseProduct() {
+        System.out.println("Podaj id produktu");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Optional<Product> OptionalProduct = productManager.findById(id);
+        if (OptionalProduct.isEmpty()) {
+            throw new ProductNotFoundException("Nie znaleziono produktu: " + id);
+        }
+        return OptionalProduct.get();
+    }
+
+    private void showMenu() {
         System.out.println("\n=== MENU ===");
-        System.out.println("1 - Dostępne produktu");
+        System.out.println("1 - Dostępne produkty");
         System.out.println("2 - Dodaj produkt do koszyka");
         System.out.println("3 - Pokaż koszyk");
         System.out.println("4 - Usuń produkt z koszyka");
@@ -163,29 +258,17 @@ public class StoreInterface {
         System.out.println("Wybierz opcję");
     }
 
-    private void productsInMagazine() {
+    private void initializeProducts() {
         Product computer = new Product(1, "AMD", 3500, 8, ProductType.COMPUTER);
-
-        Configuration computerConfig1 = new Configuration();
-        computerConfig1.add("Procesor", "Ryzen 5700xd");
-        computerConfig1.add("Ram", "32 GB");
-
-        Configuration computerConfig2 = new Configuration();
-        computerConfig2.add("Procesor", "Ryzen 9500");
-        computerConfig2.add("Ram", "16 GB");
-
-        computer.addConfiguration(computerConfig1);
-        computer.addConfiguration(computerConfig2);
+        computer.addAvailableOption(ConfigurationType.PROCESOR, List.of("Ryzen 5700xd", "Ryzen 9500"));
+        computer.addAvailableOption(ConfigurationType.RAM, List.of("16 GB", "32 GB"));
 
         Product smartphone = new Product(2, "Xioami", 500, 10, ProductType.SMARTFON);
-        Configuration phoneConfig1 = new Configuration();
-        phoneConfig1.add("Kolor", "Czarny");
-        phoneConfig1.add("Bateria", "6500 mah");
-        phoneConfig1.add("Akcesoria", "Słuchawki");
-        smartphone.addConfiguration(phoneConfig1);
+        smartphone.addAvailableOption(ConfigurationType.COLOR, List.of("Czarny", "Biały", "Niebieski"));
+        smartphone.addAvailableOption(ConfigurationType.BATTERY, List.of("4500 mah", "5000 mah", "6500 mah"));
+        smartphone.addAvailableOption(ConfigurationType.ACCESSORIES, List.of("Etui", "Słuchawki", "Szkło Ochronne"));
 
         Product tv = new Product(3, "Telewizor", 7000, 3, ProductType.ELECTRONICTS);
-        tv.addConfiguration(new Configuration());
 
         productManager.addProduct(computer);
         productManager.addProduct(smartphone);

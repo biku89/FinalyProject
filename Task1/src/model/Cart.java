@@ -25,6 +25,7 @@ public class Cart {
         } else {
             clientCart.add(new CartItem(product, configuration, quantity));
         }
+        product.reduceQuantity(quantity);
         System.out.println("Dodano do koszyka produkt " + product.getName() + " Ilość " + quantity);
 
     }

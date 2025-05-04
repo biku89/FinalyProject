@@ -1,40 +1,52 @@
 package model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Reprezentuje konfigurację produktu. Specyfikacja jest przechowywana w mapie.
  */
 public class Configuration {
-    private Map<String, String> specification = new HashMap<>();
+    private Map<ConfigurationType, String> specification = new HashMap<>();
 
     /**
      * Dodaje nowy paramater kongiguracji.
-     * @param key - nazwa parametru (np.Kolor)
+     *
+     * @param type  - nazwa parametru (np.Kolor)
      * @param value - wartość parametru(np.Czarny)
      */
-    public void add(String key, String value){
-        specification.put(key, value);
+    public void add(ConfigurationType type, String value) {
+        specification.put(type, value);
     }
 
-    public String get(String key){
+    public String get(String key) {
         return specification.getOrDefault(key, " Brak ");
     }
 
-    public Map<String, String> getAll(){
+    public Map<ConfigurationType, String> getAll() {
         return specification;
     }
 
     /**
      * Wyświetla konfigyrację produktów
      */
-    public void printConfiguration(){
-        System.out.println("Konfiguracja produktów: ");
-        specification.forEach((k, v) -> System.out.println("- " + k + ": " + v));
+    public void printConfiguration() {
+        if (specification.isEmpty()) {
+            System.out.println("Brak dodatkowych konfiguracji");
+        } else {
+            specification.forEach((k, v) -> System.out.println("- " + k + ": " + v));
+        }
     }
 
-    public Map<String, String> getSpecification() {
+    public Map<ConfigurationType, String> getSpecification() {
         return specification;
+    }
+
+    @Override
+    public String toString() {
+        return specification.entrySet().stream()
+                .map(entry -> entry.getKey() +": " + entry.getValue())
+                .collect(Collectors.joining(", "));
     }
 
     @Override

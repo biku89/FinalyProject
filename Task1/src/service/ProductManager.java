@@ -51,7 +51,7 @@ public class ProductManager {
      * Wyświetla inofrmację o wszystkich dostępnych produktach
      */
     public void showInfoAboutAllProducts() {
-        System.out.println("model.Product list: ");
+        System.out.println("Dostępne opcje: ");
         products.stream()
                 .forEach(Product::printInfo);
     }

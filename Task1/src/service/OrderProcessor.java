@@ -24,11 +24,17 @@ public class OrderProcessor {
      * @param cart       - koszyk klienta
      * @return - zwraca utworzone zamówienie
      */
-    public Order createOrder(String clientName, Cart cart) {
+    public Order createOrder(String clientName, Cart cart, String promoCode) {
         Order newOrder = new Order(clientName, cart.getClientCart());
 
         Discount discount = new Discount();
-        BigDecimal discounted = discount.applyDiscountTenPercent(newOrder.getPriceSummary());
+        BigDecimal discounted;
+
+        if (promoCode != null && promoCode.equalsIgnoreCase("PROMO20")){
+            discounted = discount.applyPromoCode(newOrder.getPriceSummary(), promoCode);
+        } else {
+            discounted = discount.applyDiscountTenPercent(newOrder.getPriceSummary());
+        }
         newOrder.setPriceAfterDiscount(discounted);
 
         orders.add(newOrder);
@@ -65,8 +71,11 @@ public class OrderProcessor {
         order.printOrderSummary();
     }
 
-    public CompletableFuture<Void> generateInvoiceAsyn(Order order) {
-        return CompletableFuture.runAsync(() -> generateInvoice(order));
+    public CompletableFuture<String> generateInvoiceAsync(Order order) {
+        return CompletableFuture.supplyAsync(() -> {
+            generateInvoice(order);
+            return "Faktura została wygenerowana";
+        });
     }
 
     public void showAllOrders() {

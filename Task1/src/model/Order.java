@@ -45,6 +45,7 @@ public class Order {
 
         for (CartItem item : orderItems) {
             System.out.println(" - " + item.getProduct().getName()
+                    +", Konfiguracja: " + item.getConfiguration()
                     +", Ilość : " + item.getQuantity()
                     + ", cena: " + item.getTotalPrice() + " zł ");
         }

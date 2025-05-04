@@ -16,7 +16,7 @@ public class StorageOrder {
      */
     public void saveOrder(Order order) {
         ordersHistory.add(order);
-        System.err.println("Zapisano zamówienie");
+        System.out.println("Zapisano zamówienie");
     }
 
     /**
