@@ -3,11 +3,10 @@ package service;
 import java.math.BigDecimal;
 
 /**
- * Klasa przechowuje informację o promocjach. W przyszłści możemy rozszerzać ją o dodatkowe promocje.
+ * Klasa reprezentuje metody naliczania promocji. W przyszłści możemy rozszerzać ją o dodatkowe promocje.
  */
 
-
-public class Discount {
+public class DiscountService {
     /**
      * Naliczenie rabatu 10% dla wartości zamówień powyżej 5000 zł
      *

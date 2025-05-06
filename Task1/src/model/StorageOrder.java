@@ -14,7 +14,7 @@ public class StorageOrder {
      *
      * @param order - zamówienie do zapisania.
      */
-    public void saveOrder(Order order) {
+    public synchronized void saveOrder(Order order) {
         ordersHistory.add(order);
         System.out.println("Zapisano zamówienie");
     }

@@ -18,6 +18,7 @@ public class StoreInterface {
     private final Cart cart = new Cart();
     private final OrderProcessor orderProcessor = new OrderProcessor();
     private Scanner scanner = new Scanner(System.in);
+    private final String validPromoCode = "PROMO20";
 
     public void start() {
         initializeProducts();
@@ -56,16 +57,15 @@ public class StoreInterface {
 
     private void placeOrder() {
         try {
-            if (cart.getClientCart().isEmpty()) {
+            if (cart.getCartItems().isEmpty()) {
                 throw new OrderProcessException("Koszyk jest pusty.");
             }
 
             String promoCode = usePromoCode();
 
-            String clientName1 = ("Jan Kowalski");
-            Order order1 = orderProcessor.createOrder(clientName1, cart, promoCode);
-            orderProcessor.processOrder(order1);
-            CompletableFuture<String> proces1 = orderProcessor.generateInvoiceAsync(order1);
+            String clientName = ("Jan Kowalski");
+            Order order = orderProcessor.createOrder(clientName, cart, promoCode);
+            CompletableFuture<String> proces1 = orderProcessor.generateInvoiceAsync(order);
 
             proces1.join();
 
@@ -103,7 +103,7 @@ public class StoreInterface {
     }
 
     private void isValidPromoCode(String promoCode) {
-        if (!"PROMO20".equalsIgnoreCase(promoCode)){
+        if (!validPromoCode.equalsIgnoreCase(promoCode)){
             throw new InvalidPromoCodeException("Kod: " + promoCode + " Jest nieprawidłowy");
         }
     }
@@ -142,15 +142,7 @@ public class StoreInterface {
     }
 
     private List<Configuration> getConfigurationsForProductId(int productId) throws ProductNotFoundException {
-        List<Configuration> configs = cart.getClientCart().stream()
-                .filter(item -> item.getProduct().getId() == productId)
-                .map(CartItem::getConfiguration)
-                .toList();
-
-        if (configs.isEmpty()) {
-            throw new ProductNotFoundException("Nie znaleziono danego produktu o id: " + productId);
-        }
-        return configs;
+       return cart.getConfigurationsForProduct(productId);
     }
 
     private int getProductIdFromUser() {
@@ -161,7 +153,7 @@ public class StoreInterface {
     }
 
     private void cartIsNotEmpty() {
-        if (cart.getClientCart().isEmpty()) {
+        if (cart.getCartItems().isEmpty()) {
             throw new EmptyCartException("Koszyk jest pusty");
         }
     }
@@ -239,11 +231,11 @@ public class StoreInterface {
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        Optional<Product> OptionalProduct = productManager.findById(id);
-        if (OptionalProduct.isEmpty()) {
+        Optional<Product> optionalProduct = productManager.findById(id);
+        if (optionalProduct.isEmpty()) {
             throw new ProductNotFoundException("Nie znaleziono produktu: " + id);
         }
-        return OptionalProduct.get();
+        return optionalProduct.get();
     }
 
     private void showMenu() {

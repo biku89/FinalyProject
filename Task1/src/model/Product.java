@@ -48,8 +48,6 @@ public class Product {
         return availableOptions;
     }
 
-
-
     /**
      * Wyświetla informację o danym produkcie.
      */
@@ -66,8 +64,9 @@ public class Product {
             System.out.println("Brak dodatkowych konfiguracji.");
         }
     }
-    public void reduceQuantity(int quantity){
-        if (quantity > quantityAvaliable){
+
+    public synchronized void reduceQuantity(int quantity) {
+        if (quantity > quantityAvaliable) {
             throw new IllegalArgumentException("Za mało produktów w magazynie");
         }
         this.quantityAvaliable -= quantity;

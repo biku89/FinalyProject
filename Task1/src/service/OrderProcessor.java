@@ -25,9 +25,9 @@ public class OrderProcessor {
      * @return - zwraca utworzone zamówienie
      */
     public Order createOrder(String clientName, Cart cart, String promoCode) {
-        Order newOrder = new Order(clientName, cart.getClientCart());
+        Order newOrder = new Order(clientName, cart.getCartItems());
 
-        Discount discount = new Discount();
+        DiscountService discount = new DiscountService();
         BigDecimal discounted;
 
         if (promoCode != null && promoCode.equalsIgnoreCase("PROMO20")){
@@ -42,23 +42,6 @@ public class OrderProcessor {
 
         System.out.println("Zamówienie zostało złożone.");
         return newOrder;
-    }
-
-    /**
-     * Przetwarzanie zamówień w osobnych wątkach
-     * Każde zamówienie czeka aż poprzednie skończy się przetwarzać
-     *
-     * @param order - zamówienie które będzie przetwarzane
-     */
-    public void processOrder(Order order) {
-        OrderThread orderThread = new OrderThread(order);
-        Thread thread = new Thread(orderThread);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            System.err.println("Błąd przy przetwarzaniu zamówienia");
-        }
     }
 
     /**

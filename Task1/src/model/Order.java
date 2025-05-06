@@ -26,6 +26,7 @@ public class Order {
 
     /**
      * Oblicza sumę zamówienia bez rabatu
+     *
      * @return całkowita wartość zamówienia
      */
     private BigDecimal sumOrder() {
@@ -45,17 +46,15 @@ public class Order {
 
         for (CartItem item : orderItems) {
             System.out.println(" - " + item.getProduct().getName()
-                    +", Konfiguracja: " + item.getConfiguration()
-                    +", Ilość : " + item.getQuantity()
+                    + ", Konfiguracja: " + item.getConfiguration()
+                    + ", Ilość : " + item.getQuantity()
                     + ", cena: " + item.getTotalPrice() + " zł ");
-        }
 
+        }
         System.out.println("Suma zamówienia przed rabatem: " + priceSummary);
-
-        if (priceAfterDiscount != null){
-            System.out.println("Suma zamówienia po rabacie " + priceAfterDiscount + " zł");
-        }
+        System.out.println("Suma zamówienia po rabacie " + getFinalPrice() + " zł");
     }
+
 
     public BigDecimal getPriceSummary() {
         return priceSummary;
