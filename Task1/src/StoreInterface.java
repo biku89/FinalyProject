@@ -17,41 +17,44 @@ public class StoreInterface {
     private final ProductManager productManager = new ProductManager();
     private final Cart cart = new Cart();
     private final OrderProcessor orderProcessor = new OrderProcessor();
-    private Scanner scanner = new Scanner(System.in);
+    private Scanner scanner;
     private final String validPromoCode = "PROMO20";
 
     public void start() {
         initializeProducts();
-
         boolean running = true;
 
-        while (running) {
-            showMenu();
-            try {
-                int option = scanner.nextInt();
-                scanner.nextLine();
+        try (Scanner scanner = new Scanner(System.in)){
+            this.scanner = scanner;
 
-                switch (option) {
-                    case 1 -> productManager.showInfoAboutAllProducts();
-                    case 2 -> addProductToCart();
-                    case 3 -> cart.showClientCart();
-                    case 4 -> removeProductFromCart();
-                    case 5 -> placeOrder();
-                    case 6 -> {
-                        System.out.println("Twoja historia zamówień: ");
-                        orderProcessor.printOrderHistory();
+            while (running) {
+                showMenu();
+                try {
+                    int option = scanner.nextInt();
+                    scanner.nextLine();
+
+                    switch (option) {
+                        case 1 -> productManager.showInfoAboutAllProducts();
+                        case 2 -> addProductToCart();
+                        case 3 -> cart.showClientCart();
+                        case 4 -> removeProductFromCart();
+                        case 5 -> placeOrder();
+                        case 6 -> {
+                            System.out.println("Twoja historia zamówień: ");
+                            orderProcessor.printOrderHistory();
+                        }
+                        case 0 -> {
+                            System.out.println("Zamykamy aplikację");
+                            running = false;
+                        }
+                        default -> System.out.println("Nie prawidłowy wybór");
                     }
-                    case 0 -> {
-                        System.out.println("Zamykamy aplikację");
-                        running = false;
-                    }
-                    default -> System.out.println("Nie prawidłowy wybór");
+                } catch (Exception e) {
+                    System.out.println("Podaj poprawną cyfrę");
+                    scanner.nextLine();
                 }
-            } catch (Exception e) {
-                System.out.println("Podaj poprawną cyfrę");
-                scanner.nextLine();
-            }
 
+            }
         }
     }
 
