@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Klasa przechowująca historię złożonych zamówień.
  */
-public class StorageOrder {
+public class OrderStorage {
     private List<Order> ordersHistory = new ArrayList<>();
 
     /**

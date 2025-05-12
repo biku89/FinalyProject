@@ -1,5 +1,6 @@
 import exception.*;
 import model.*;
+import service.DiscountService;
 import service.OrderProcessor;
 import service.ProductManager;
 
@@ -18,7 +19,6 @@ public class StoreInterface {
     private final Cart cart = new Cart();
     private final OrderProcessor orderProcessor = new OrderProcessor();
     private Scanner scanner;
-    private final String validPromoCode = "PROMO20";
 
     public void start() {
         initializeProducts();
@@ -106,7 +106,7 @@ public class StoreInterface {
     }
 
     private void isValidPromoCode(String promoCode) {
-        if (!validPromoCode.equalsIgnoreCase(promoCode)){
+        if (!DiscountService.CODE_PROMO_20.equalsIgnoreCase(promoCode)){
             throw new InvalidPromoCodeException("Kod: " + promoCode + " Jest nieprawidłowy");
         }
     }
