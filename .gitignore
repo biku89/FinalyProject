@@ -1,10 +1,18 @@
-# IntelliJ
+# IntelliJ IDEA
 .idea/
 *.iml
 
-# Kompilacja
-/out/
+# Pliki kompilacji
+target/
+build/
 *.class
 
-# Inne
+# Pliki logów
 *.log
+
+# Pliki tymczasowe
+*.tmp
+*.swp
+
+# Pliki systemowe
+.DS_Store
