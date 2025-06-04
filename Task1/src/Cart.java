@@ -7,24 +7,20 @@ public class Cart {
 
     public void addToCart(Product product, int quantity) {
         Optional<CartItem> items = findByProductId(product.getId());
-
-        if (items.isPresent()){
+        if (items.isPresent()) {
             CartItem item = items.get();
             item.setQuantity(item.getQuantity() + quantity);
         } else {
             clientCart.add(new CartItem(product, quantity));
         }
         System.out.println("Dodano do koszyka produkt " + product.getName() + " Ilość " + quantity);
-
     }
 
-    private Optional<CartItem> findByProductId(int productid){
+    private Optional<CartItem> findByProductId(int productid) {
         return clientCart.stream()
                 .filter(i -> i.getProduct().getId() == productid)
                 .findFirst();
     }
-
-
 
     public void showClientCart() {
         if (clientCart.isEmpty()) {
@@ -35,7 +31,7 @@ public class Cart {
         clientCart.stream()
                 .forEach(CartItem::printItem);
 
-        System.out.println("Podsumowanie: " + sumOrder() );
+        System.out.println("Podsumowanie: " + sumOrder());
 
     }
 
@@ -49,7 +45,6 @@ public class Cart {
         }
 
     }
-
 
     public double sumOrder() {
         return clientCart.stream().mapToDouble(CartItem::getTotalPrice).sum();
